@@ -1,0 +1,26 @@
+services:
+  run-dev:
+    build: '.'
+    volumes:
+      - '.:/app'
+    env_file:
+      - 'config.env'
+      # - '.env.example'
+    ports:
+      - '5000:5000'
+    depends_on:
+      - 'mongo'
+
+  mongo:
+    image: 'mongo'
+    restart: 'always'
+    env_file:
+      - 'config.env'
+      # - '.env.example'
+    volumes:
+      - 'db-data:/data/db'
+      - 'mongo-config:/data/configdb'
+
+volumes:
+  db-data:
+  mongo-config:

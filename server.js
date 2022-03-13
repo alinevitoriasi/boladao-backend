@@ -8,7 +8,7 @@ app.use(express.json());
 const mongoose = require('mongoose');
 
 // Ligar á B.D.: 'test'->user da BD, ´nnn´->pass
-mongoose.connect(process.env.ATLAS_URI);
+mongoose.connect(process.env.DB_URI);
 
 // Confirma ligação na consola
 mongoose.connection.on('connected', function () {
