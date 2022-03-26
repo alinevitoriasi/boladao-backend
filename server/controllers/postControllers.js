@@ -1,39 +1,57 @@
 const mongoose = require('mongoose');
 const modelPost = mongoose.model('Post');
 
-
 let postController = {}
 
-postController.create = function (req, res, next) {
-  modelPost.create(req.body).then(function(Post){
-      res.send(Post);
-    }).catch(next);
+postController.create = async function (req, res, next) {
+  try {
+    const Post = await modelPost.create(req.body);
+    res.send(Post);
+  }
+  catch(err) {
+    next(err)
+  }
 };
 
-postController.list = function (req, res) {
-  modelPost.find({}).then(function(Post){
-  res.send(Post);
-  });
+postController.list = async function (req, res) {
+  try {
+    const Post = await  modelPost.find({})
+    res.send(Post);
+  }
+  catch(err) {
+    next(err)
+  }
 };
 
-// exports.getPostById = function (req, res) {
-//   Post.findOne({_id: req.params.id}).then(function(Post){
-//   res.send(Post);
-//   });
-// };
+postController.update = async function (req, res) {
+  try {
+    await modelPost.findByIdAndUpdate({_id: req.params.id}, req.body)
+    const Post = await modelPost.findOne({_id: req.params.id})
+    res.send(Post);
+  }
+  catch(err) {
+    next(err)
+  }
+};
 
-// exports.update = function (req, res, next) {
-//   Post.findByIdAndUpdate({_id: req.params.id}, req.body).then(function(){
-//     Post.findOne({_id: req.params.id}).then(function(Post){
-//       res.send(Post);
-//     });
-//   }).catch(next);
-// };
+postController.delete = async function (req, res) {
+  try {
+    const Post = await modelPost.findByIdAndRemove({_id: req.params.id})
+    res.send(Post);
+  }
+  catch(err) {
+    next(err)
+  }
+};
 
-// exports.delete = function (req, res, next) {
-//   Post.findByIdAndRemove({_id: req.params.id}).then(function(Post){
-//     res.send(Post);
-//   }).catch(next);
-// };
+postController.getPostById = async function (req, res) {
+  try {
+    const Post = await modelPost.findOne({_id: req.params.id})
+    res.send(Post);
+  }
+  catch(err) {
+    next(err)
+  }
+};
 
 module.exports = postController;

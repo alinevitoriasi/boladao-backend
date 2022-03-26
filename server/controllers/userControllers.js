@@ -4,49 +4,62 @@ const modelUser = mongoose.model('User');
 
 let userController = {}
 
-userController.allUsers = (req, res) => {
-    modelUser.find({}, {_id:0, password:0, isAdmin:0, __v:0 })
-    .then(results => {
-        // const usernames = results.map(({username})=> ({ user: username}))
-        res.json(results)
-    })
-    .catch(err => res.send(err));    
+userController.allUsers = async (req, res) => {
+    try {
+        const Users = await modelUser.find({}, {_id:0, password:0, isAdmin:0, __v:0 })
+        res.json(Users)
+    }
+    catch(err){
+        res.send(err)
+    }
 }
-
-userController.newUser = (req, res) => {
+    
+userController.newUser = async (req, res) => {
     if(req.body.username && req.body.password){
-        if(req.body.password2 && req.body.password === req.body.password2){
-            modelUser.findOne({ 'username': req.body.username})
-            .then(user => {
-                if(user){
-                    res.json({ success: false, message:'Esse nome não está disponivel.'})
+        if(req.body.comparePassword && req.body.password === req.body.comparePassword){
+            try{
+                const User = await modelUser.findOne({ 'username': req.body.username})
+                if(User){
+                    res.status(200).json({ message:'Esse nome não está disponivel.'})
                 }
-                else {
-                    bcrypt.hash(req.body.password, 10)
-                    .then(hash => {
-                        let encryptedPassword = hash;
+                else{
+                    try{
+                       const hash = await bcrypt.hash(req.body.password, 10)
 
-                        let newUser = new modelUser({
-                            username: req.body.username,
-                            password: encryptedPassword,
-                            email: req.body.email,
-                            isAdmin:req.body.isAdmin,
-                        })
-                        
-                        newUser.save()
-                            .then(()=> res.json({success:true, message:'Usuário criado com sucesso', statusCode: 201}))
-                            .catch(err =>res.json({success:false, message:err, statusCode: 500}));
-                    })
-                    .catch(err =>res.json({success:false, message:err, statusCode: 500}));
+                       let encryptedPassword = hash;
+
+                       let newUser = new modelUser({
+                           username: req.body.username,
+                           password: encryptedPassword,
+                           email: req.body.email,
+                           isAdmin:req.body.isAdmin,
+                       })
+
+                       try{
+                            await newUser.save()
+                            res.status(201).json({ message:'Usuário criado com sucesso'})
+                        }
+                        catch(err){
+                            res.status(500).json({ message:err})
+                        }
+                       
+                    }
+                    catch(err){
+                        res.status(500).json({ message:err})
+                    }
+                    
                 }
-            })
+            }
+            catch(err){
+                res.statusCode(500).json({ message:err})
+            }
         }
-        else {
-            res.json({success:false, message:'As senhas não coincidem.', statusCode: 400})
+        else{
+            res.status(400).json({success:false, message:'As senhas não coincidem.'})
         }
     }
-    else {
-        res.json({success:false, message:'Campos obrigatórios', statusCode: 400})
+    else{
+        res.status(400).json({success:false, message:'Campos obrigatórios'})
     }    
 
 }
