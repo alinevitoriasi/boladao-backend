@@ -19,6 +19,9 @@
 make docker  # builda e sobe o container
 # or
 make all     # desce, builda e sobe o container
+# or
+docker-compose up -d --build  # builda e sobe o container
+
 ```
 
 ## Rodando os testes
