@@ -16,46 +16,45 @@ userController.allUsers = async (req, res) => {
     
 userController.newUser = async (req, res) => {
     if(req.body.username && req.body.password){
-        if(req.body.comparePassword && req.body.password === req.body.comparePassword){
-            try{
-                const User = await modelUser.findOne({ 'username': req.body.username})
-                if(User){
-                    res.status(200).json({ message:'Esse nome não está disponivel.'})
-                }
-                else{
-                    try{
-                       const hash = await bcrypt.hash(req.body.password, 10)
+        try{
+            const User = await modelUser.findOne({ 'username': req.body.username})
+            const UserEmail = await modelUser.findOne({ 'email': req.body.email})
+            if(User){
+                res.status(400).json({ message:'Esse nome não está disponivel.'})
+            }
+            else if(UserEmail){
+                res.status(400).json({ message:'Email já cadastrado!'})
+            }
+            else{
+                try{
+                   const hash = await bcrypt.hash(req.body.password, 10)
 
-                       let encryptedPassword = hash;
+                   let encryptedPassword = hash;
 
-                       let newUser = new modelUser({
-                           username: req.body.username,
-                           password: encryptedPassword,
-                           email: req.body.email,
-                           isAdmin:req.body.isAdmin,
-                       })
+                   let newUser = new modelUser({
+                       username: req.body.username,
+                       password: encryptedPassword,
+                       email: req.body.email,
+                       isAdmin:req.body.isAdmin,
+                   })
 
-                       try{
-                            await newUser.save()
-                            res.status(201).json({ message:'Usuário criado com sucesso'})
-                        }
-                        catch(err){
-                            res.status(500).json({ message:err})
-                        }
-                       
+                   try{
+                        await newUser.save()
+                        res.status(201).json({ message:'Usuário criado com sucesso'})
                     }
                     catch(err){
                         res.status(500).json({ message:err})
                     }
-                    
+                   
                 }
-            }
-            catch(err){
-                res.statusCode(500).json({ message:err})
+                catch(err){
+                    res.status(500).json({ message:err})
+                }
+                
             }
         }
-        else{
-            res.status(400).json({success:false, message:'As senhas não coincidem.'})
+        catch(err){
+            res.statusCode(500).json({ message:err})
         }
     }
     else{
