@@ -15,52 +15,32 @@ userController.allUsers = async (req, res) => {
 }
     
 userController.newUser = async (req, res) => {
-    if(req.body.username && req.body.password){
-        try{
-            const User = await modelUser.findOne({ 'username': req.body.username})
-            const UserEmail = await modelUser.findOne({ 'email': req.body.email})
-            if(User){
-                res.status(400).json({ message:'Esse nome não está disponivel.'})
-            }
-            else if(UserEmail){
-                res.status(400).json({ message:'Email já cadastrado!'})
-            }
-            else{
-                try{
-                   const hash = await bcrypt.hash(req.body.password, 10)
+    if(!req.body.username || !req.body.password) 
+        return res.status(400).json({success:false, message:'Campos obrigatórios'})
+    try{
+        const promiseFindByUsername = modelUser.findOne({'username': req.body.username})
+        const promiseFindByEmail = modelUser.findOne({'email': req.body.email})
 
-                   let encryptedPassword = hash;
+        const [user, email] = await Promise.all([promiseFindByUsername, promiseFindByEmail])
 
-                   let newUser = new modelUser({
-                       username: req.body.username,
-                       password: encryptedPassword,
-                       email: req.body.email,
-                       isAdmin:req.body.isAdmin,
-                   })
+        if(user) return res.status(400).json({ message:'Esse nome não está disponivel.'})
+        
+        if(email) return res.status(400).json({ message:'Email já cadastrado!'})
+        
+        const encryptedPassword = await bcrypt.hash(req.body.password, 10)
+        const newUser = new modelUser({
+            username: req.body.username,
+            password: encryptedPassword,
+            email: req.body.email,
+            isAdmin:req.body.isAdmin,
+        })
 
-                   try{
-                        await newUser.save()
-                        res.status(201).json({ message:'Usuário criado com sucesso'})
-                    }
-                    catch(err){
-                        res.status(500).json({ message:err})
-                    }
-                   
-                }
-                catch(err){
-                    res.status(500).json({ message:err})
-                }
-                
-            }
-        }
-        catch(err){
-            res.statusCode(500).json({ message:err})
-        }
+        await newUser.save()
+        res.status(201).json({ message:'Usuário criado com sucesso'})    
     }
-    else{
-        res.status(400).json({success:false, message:'Campos obrigatórios'})
-    }    
-
+    catch(err){
+       return res.statusCode(500).json({ message:'err'})
+    }
 }
 
 module.exports = userController;
