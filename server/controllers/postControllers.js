@@ -5,23 +5,59 @@ let postController = {}
 
 postController.create = async function (req, res, next) {
   try {
-    const Post = await modelPost.create(req.body);
-    res.send(Post);
+    if(req.session.user){
+      const newPost = new modelPost({
+        text: req.body.text,
+        author: {
+          username: req.session.user.username,
+          id: req.session.user._id
+        },
+      });
+
+      const Post = await modelPost.create(newPost);
+      res.send(Post);
+    }
+    else {
+      res.status(401).json({ message:'Não autorizado!'})
+    } 
   }
   catch(err) {
     next(err)
   }
 };
 
-postController.list = async function (req, res) {
+postController.list = async function (req, res, next) {
   try {
-    const Post = await  modelPost.find({})
-    res.send(Post);
+    console.log(req.session.user)
+    if(req.session.user){
+      const Post = await  modelPost.find({})
+      res.send(Post);
+    }
+    else {
+      res.status(401).json({ message:'Não autorizado!'})
+    } 
   }
   catch(err) {
     next(err)
   }
 };
+
+
+postController.mypost = async function (req, res, next) {
+  try {
+    if(req.session.user){
+      const Post = await  modelPost.find({'author.id':req.session.user._id})
+      res.send(Post);
+    }
+    else {
+      res.status(401).json({ message:'Não autorizado!'})
+    } 
+  }
+  catch(err) {
+    next(err)
+  }
+};
+
 
 postController.update = async function (req, res) {
   try {

@@ -5,9 +5,12 @@ const path = require('path');
 module.exports = () => {
   const app = express();
   const cors = require("cors");
+  const session = require('express-session');
+  
   app.use(cors());
-  app.set('port', (5000));
+  app.use(session({ secret:'@boladao-Token',saveUninitialized: false, resave: false }));
 
+  app.set('port', (5000));
   app.use(express.urlencoded({extended: true}));
   app.use(express.json());
 

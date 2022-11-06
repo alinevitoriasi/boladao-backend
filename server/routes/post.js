@@ -9,4 +9,8 @@ module.exports = (app) => {
     .put(postController.update)
     .delete(postController.delete)
     .get(postController.getPostById)
+
+
+    app.route('/mypost')
+    .get(postController.mypost)
 }

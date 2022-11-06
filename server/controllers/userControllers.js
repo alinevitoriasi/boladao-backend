@@ -39,7 +39,7 @@ userController.newUser = async (req, res) => {
         res.status(201).json({ message:'Usuário criado com sucesso'})    
     }
     catch(err){
-       return res.statusCode(500).json({ message:'err'})
+       return res.status(500).json({ message:'Erro desconhecido aaaaa!!'})
     }
 }
 
