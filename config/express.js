@@ -7,7 +7,7 @@ module.exports = () => {
   const cors = require("cors");
   const session = require('express-session');
   
-  app.use(cors());
+  app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
   app.use(session({ secret:'@boladao-Token',saveUninitialized: false, resave: false }));
 
   app.set('port', (5000));
