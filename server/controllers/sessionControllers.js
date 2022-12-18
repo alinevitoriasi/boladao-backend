@@ -21,7 +21,7 @@ sessionController.login = async function (req, res, next) {
     
     req.session.user = user;
 
-    return res.status(200).json({auth:true, message:'TUDO SUPIMPA!', token:token})
+    return res.status(200).json({auth:true, message:'TUDO SUPIMPA!', token:token, username:user?.username })
   }
   catch(err) {
     return res.status(500).json(err)
