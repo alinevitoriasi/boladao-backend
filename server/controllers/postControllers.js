@@ -58,6 +58,18 @@ postController.mypost = async function (req, res, next) {
 };
 
 
+postController.comment = async function (req, res) {
+  try {
+    await modelPost.findByIdAndUpdate({_id: req.params.id}, 
+      { $push: { comments: req.body } })
+    const Post = await modelPost.findOne({_id: req.params.id})
+    res.send(Post);
+  }
+  catch(err) {
+    next(err)
+  }
+};
+
 postController.update = async function (req, res) {
   try {
     await modelPost.findByIdAndUpdate({_id: req.params.id}, req.body)

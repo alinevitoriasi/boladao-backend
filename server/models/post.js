@@ -17,6 +17,8 @@ const PostSchema = new Schema({
     type: String,
     required: [true, 'Campo obrigatório!']
   },
+  date: String,
+  comments:[{ text: String,  username: String, date: String}]
 });
 
 mongoose.model('Post', PostSchema)
