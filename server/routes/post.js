@@ -7,10 +7,11 @@ module.exports = (app) => {
 
     app.route('/posts/:id')
     .put(postController.update)
-    .put(postController.comment)
     .delete(postController.delete)
     .get(postController.getPostById)
 
+    app.route('/add/:id')
+    .put(postController.comment)
 
     app.route('/mypost')
     .get(postController.mypost)
