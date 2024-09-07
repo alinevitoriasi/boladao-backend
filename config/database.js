@@ -5,7 +5,7 @@ require("dotenv").config({ path: "./config.env" });
 mongoose.connect(process.env.DATABASE_URI);
 
 mongoose.connection.on('connected', function () {
-  console.log('Conectado ao bando de dados '+'test');
+  console.log('Conectado ao banco de dados');
 });
 
 mongoose.connection.on('error', (err) => {
