@@ -30,7 +30,7 @@ postController.create = async function (req, res, next) {
 
 postController.list = async function (req, res, next) {
   try {
-    logger.error(`req: ${req.session.user}`);
+    logger.error(`req: ${req}`);
     if(req.session.user){
       const Post = await  modelPost.find({})
       res.send(Post);
