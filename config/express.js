@@ -30,12 +30,12 @@ module.exports = () => {
       callback(null, !origin || allowedOrigins.includes(origin));
     }
   }));
-  
+
   app.use(session({
     secret: '@boladao-Token',
     saveUninitialized: false,
     resave: false,
-    cookie: { secure: true } // Garante que o cookie seja enviado apenas em conexões HTTPS
+    cookie: { secure: true, httpOnly: true, maxAge: 60000 }
   }));
 
   app.set('port', (5000));
