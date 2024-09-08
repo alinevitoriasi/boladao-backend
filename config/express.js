@@ -26,10 +26,7 @@ module.exports = () => {
 
   app.use(cors({
     credentials: true,
-    methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
-    origin: (origin, callback) => {
-      callback(null, !origin || allowedOrigins.includes(origin));
-    }
+    origin: 'https://campus-juntos.vercel.app'
   }));
 
   app.use(session({ secret:'@boladao-Token',
