@@ -11,7 +11,7 @@ const MongoStore = require('connect-mongo');
 module.exports = () => {
   const app = express();
 
-  app.set("trust proxy", 1);
+  app.set("trust proxy", true);
   // Configuração do rate limiter
   const limiter = rateLimit({
     windowMs: 30 * 60 * 1000, // 15 minutos
@@ -44,7 +44,7 @@ module.exports = () => {
       collectionName: 'sessions'
     }),
     cookie: {
-      secure: false,
+      secure: true,
       maxAge: 1000 * 60 * 60 * 24  // 1 dia
     }
   }));
