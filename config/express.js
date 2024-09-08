@@ -35,7 +35,10 @@ module.exports = () => {
     secret: '@boladao-Token',
     saveUninitialized: false,
     resave: false,
-    cookie: { secure: true, httpOnly: true, maxAge: 60000 }
+    cookie: { secure: true,
+      domain: '.campus-juntos.vercel.app', 
+      path: '/',
+      httpOnly: true, maxAge: 3600000  }
   }));
 
   app.set('port', (5000));
