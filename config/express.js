@@ -1,23 +1,23 @@
 const express = require('express');
 const consign = require('consign');
 
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+// const helmet = require('helmet');
+// const rateLimit = require('express-rate-limit');
 
 module.exports = () => {
   const app = express();
   const cors = require("cors");
   const session = require('express-session');
 
-  // Configuração do rate limiter
-  const limiter = rateLimit({
-    windowMs: 30 * 60 * 1000, // 15 minutos
-    max: 100, // limite de 100 requisições por IP por janela de tempo
-    message: 'Muitas requisições de seu IP, por favor tente novamente mais tarde.'
-  });
-  app.use(limiter);
+  // // Configuração do rate limiter
+  // const limiter = rateLimit({
+  //   windowMs: 30 * 60 * 1000, // 15 minutos
+  //   max: 100, // limite de 100 requisições por IP por janela de tempo
+  //   message: 'Muitas requisições de seu IP, por favor tente novamente mais tarde.'
+  // });
+  // app.use(limiter);
 
-  app.use(helmet());
+  // app.use(helmet());
 
   const allowedOrigins = [
     'http://localhost:3000',
