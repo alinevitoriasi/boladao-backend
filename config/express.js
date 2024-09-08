@@ -44,7 +44,7 @@ module.exports = () => {
       collectionName: 'sessions'
     }),
     cookie: {
-      secure: true,
+      secure: false,
       maxAge: 1000 * 60 * 60 * 24  // 1 dia
     }
   }));
