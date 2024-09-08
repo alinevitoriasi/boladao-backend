@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const modelPost = mongoose.model('Post');
 
+const logger = require('../logger');
+
 let postController = {}
 
 postController.create = async function (req, res, next) {
@@ -28,6 +30,7 @@ postController.create = async function (req, res, next) {
 
 postController.list = async function (req, res, next) {
   try {
+    logger.error(`req: ${req.session.user}`);
     if(req.session.user){
       const Post = await  modelPost.find({})
       res.send(Post);
@@ -36,7 +39,7 @@ postController.list = async function (req, res, next) {
       res.status(401).json({ message:`Não autorizado! ${req.session.user}`})
     }
   }
-  catch(err) {
+  catch(err) { 
     next(err)
   }
 };

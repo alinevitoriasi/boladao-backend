@@ -18,8 +18,8 @@ sessionController.login = async function (req, res, next) {
     }
 
     const token = jwt.sign({id: user._id},'@boladao-token',{expiresIn:"3d"})
-    
     req.session.user = user;
+    res.send(req.session.user);
 
     return res.status(200).json({auth:true, message:'TUDO SUPIMPA!', token:token, username:user?.username, isAdmin:user?.isAdmin })
   }

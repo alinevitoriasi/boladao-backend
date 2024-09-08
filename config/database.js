@@ -10,7 +10,7 @@ mongoose.connection.on('connected', function () {
 });
 
 mongoose.connection.on('error', (err) => {
-  logger.error(`Erro detectado: ${err.message}`);
+  // logger.error(`Erro detectado: ${err.message}`);
   console.log('Erro na conexão '+err);
 });
 

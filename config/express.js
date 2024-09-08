@@ -26,19 +26,20 @@ module.exports = () => {
 
   app.use(cors({
     credentials: true,
+    methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
     origin: (origin, callback) => {
       callback(null, !origin || allowedOrigins.includes(origin));
     }
   }));
 
-  app.use(session({
-    secret: '@boladao-Token',
+  app.use(session({ secret:'@boladao-Token',
     saveUninitialized: false,
     resave: false,
-    cookie: { secure: true,
-      domain: '.campus-juntos.vercel.app', 
-      path: '/',
-      httpOnly: true, maxAge: 3600000  }
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365
+    }
   }));
 
   app.set('port', (5000));
