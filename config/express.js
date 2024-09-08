@@ -2,25 +2,25 @@ const express = require('express');
 const consign = require('consign');
 require("dotenv").config({ path: "./config.env" });
 
-// const helmet = require('helmet');
-// const rateLimit = require('express-rate-limit');
-
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const cors = require("cors");
+const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
 module.exports = () => {
   const app = express();
-  const cors = require("cors");
-  const session = require('cookie-session');
-  app.set("trust proxy", 1);
-  // // Configuração do rate limiter
-  // const limiter = rateLimit({
-  //   windowMs: 30 * 60 * 1000, // 15 minutos
-  //   max: 100, // limite de 100 requisições por IP por janela de tempo
-  //   message: 'Muitas requisições de seu IP, por favor tente novamente mais tarde.'
-  // });
-  // app.use(limiter);
 
-  // app.use(helmet());
+  app.set("trust proxy", 1);
+  // Configuração do rate limiter
+  const limiter = rateLimit({
+    windowMs: 30 * 60 * 1000, // 15 minutos
+    max: 100, // limite de 100 requisições por IP por janela de tempo
+    message: 'Muitas requisições de seu IP, por favor tente novamente mais tarde.'
+  });
+  app.use(limiter);
+
+  app.use(helmet());
 
   const allowedOrigins = [
     'http://localhost:3000',
