@@ -7,7 +7,7 @@ const consign = require('consign');
 module.exports = () => {
   const app = express();
   const cors = require("cors");
-  const session = require('express-session');
+  const session = require('cookie-session');
 
   // // Configuração do rate limiter
   // const limiter = rateLimit({
