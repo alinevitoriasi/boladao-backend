@@ -8,7 +8,7 @@ module.exports = () => {
   const app = express();
   const cors = require("cors");
   const session = require('cookie-session');
-
+  app.set("trust proxy", 1);
   // // Configuração do rate limiter
   // const limiter = rateLimit({
   //   windowMs: 30 * 60 * 1000, // 15 minutos
