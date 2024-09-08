@@ -1,8 +1,11 @@
 const express = require('express');
 const consign = require('consign');
+require("dotenv").config({ path: "./config.env" });
 
 // const helmet = require('helmet');
 // const rateLimit = require('express-rate-limit');
+
+const MongoStore = require('connect-mongo');
 
 module.exports = () => {
   const app = express();
@@ -32,13 +35,17 @@ module.exports = () => {
   }));
 
 
-  app.use(session({ secret:'@boladao-Token',
-    saveUninitialized: false,
+  app.use(session({
+    secret: '@boladao-Token',
     resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.DATABASE_URI,
+      collectionName: 'sessions'
+    }),
     cookie: {
-      httpOnly: true,
       secure: true,
-      maxAge: 1000 * 60 * 60 * 24 * 365
+      maxAge: 1000 * 60 * 60 * 24  // 1 dia
     }
   }));
 

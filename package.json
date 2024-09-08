@@ -13,6 +13,7 @@
   "dependencies": {
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.2",
+    "connect-mongo": "^5.1.0",
     "consign": "^0.1.6",
     "cookie-session": "^2.1.0",
     "cors": "^2.8.5",
@@ -22,8 +23,8 @@
     "express-rate-limit": "^7.4.0",
     "express-session": "^1.17.3",
     "helmet": "^7.1.0",
-    "jsonwebtoken": "^8.5.1",
-    "mongodb": "^4.4.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.8.1",
     "mongoose": "^6.7.1",
     "password-validator": "^5.3.0",
     "winston": "^3.14.2"
