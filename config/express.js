@@ -1,7 +1,7 @@
 const express = require('express');
 const consign = require('consign');
-const path = require('path');
 
+const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 module.exports = () => {
@@ -11,13 +11,26 @@ module.exports = () => {
 
   // Configuração do rate limiter
   const limiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 15 minutos
+    windowMs: 30 * 60 * 1000, // 15 minutos
     max: 100, // limite de 100 requisições por IP por janela de tempo
     message: 'Muitas requisições de seu IP, por favor tente novamente mais tarde.'
   });
   app.use(limiter);
 
-  app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
+  app.use(helmet());
+
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://campus-juntos.vercel.app',
+  ];
+
+  app.use(cors({
+    credentials: true,
+    origin: (origin, callback) => {
+      callback(null, !origin || allowedOrigins.includes(origin));
+    }
+  }));
+
   app.use(session({ secret:'@boladao-Token',saveUninitialized: false, resave: false }));
 
   app.set('port', (5000));
