@@ -11,7 +11,7 @@ const MongoStore = require('connect-mongo');
 module.exports = () => {
   const app = express();
 
-  app.set("trust proxy", true);
+
   // Configuração do rate limiter
   const limiter = rateLimit({
     windowMs: 30 * 60 * 1000, // 15 minutos
@@ -34,11 +34,11 @@ module.exports = () => {
     }
   }));
 
-
+  app.set("trust proxy", 1);
   app.use(session({
     secret: '@boladao-Token',
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: MongoStore.create({
       mongoUrl: process.env.DATABASE_URI,
       collectionName: 'sessions'
