@@ -19,7 +19,7 @@ postController.create = async function (req, res, next) {
     }
     else {
       res.status(401).json({ message:'Não autorizado!'})
-    } 
+    }
   }
   catch(err) {
     next(err)
@@ -33,8 +33,8 @@ postController.list = async function (req, res, next) {
       res.send(Post);
     }
     else {
-      res.status(401).json({ message:'Não autorizado!'})
-    } 
+      res.status(401).json({ message:`Não autorizado! ${req.session.user}`})
+    }
   }
   catch(err) {
     next(err)
@@ -50,7 +50,7 @@ postController.mypost = async function (req, res, next) {
     }
     else {
       res.status(401).json({ message:'Não autorizado!'})
-    } 
+    }
   }
   catch(err) {
     next(err)
@@ -60,7 +60,7 @@ postController.mypost = async function (req, res, next) {
 
 postController.comment = async function (req, res) {
   try {
-    await modelPost.findByIdAndUpdate({_id: req.params.id}, 
+    await modelPost.findByIdAndUpdate({_id: req.params.id},
       { $push: { comments: req.body } })
     const Post = await modelPost.findOne({_id: req.params.id})
     res.send(Post);
