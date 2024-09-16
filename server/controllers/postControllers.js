@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const modelPost = mongoose.model('Post');
 
-const logger = require('../logger');
 
 let postController = {}
 
@@ -10,14 +9,18 @@ postController.create = async function (req, res, next) {
     if(req.session.user){
       const newPost = new modelPost({
         text: req.body.text,
+        date: req.body.date,
+        location: req.body.location,
+        type: req.body.type,
+        isAnonymous: req.body.isAnonymous,
         author: {
           username: req.session.user.username,
           id: req.session.user._id
         },
       });
 
-      const Post = await modelPost.create(newPost);
-      res.send(Post);
+      await modelPost.create(newPost);
+      res.status(200).json({ message: 'Criado com Sucesso!' });
     }
     else {
       res.status(401).json({ message:'Não autorizado!'})
@@ -29,17 +32,30 @@ postController.create = async function (req, res, next) {
 };
 
 postController.list = async function (req, res, next) {
+  console.log('req',req.session)
   try {
-    console.log('req:', req.session);
-    if(req.session){
-      const Post = await  modelPost.find({})
-      res.send(Post);
+    if(req.session.user){
+        const posts = await modelPost.find({});
+        console.log(posts);
+
+        const modifiedPosts = posts.map(post => {
+          const { username } = post.author
+          const usernameLength = username && username?.length > 3 ? username?.length - 3 : 0;
+          const usernameFormatted =  username?.slice(0, 3)?.toLowerCase() + '*'.repeat(usernameLength)
+          return {
+            _id: post._id,
+            text: post.text,
+            type: post.type,
+            author: {username: username? usernameFormatted : '' },
+          };
+        }).reverse();
+        res.send(modifiedPosts);
     }
     else {
       res.status(401).json({ message:`Não autorizado! ${req.session.user}`})
     }
   }
-  catch(err) { 
+  catch(err) {
     next(err)
   }
 };
