@@ -32,34 +32,54 @@ postController.create = async function (req, res, next) {
 };
 
 postController.list = async function (req, res, next) {
-  console.log('req',req.session)
   try {
-    if(req.session.user){
-        const posts = await modelPost.find({});
-        console.log(posts);
+    if (req.session.user) {
+      const { type, startDate, endDate, text } = req.query;
 
-        const modifiedPosts = posts.map(post => {
-          const { username } = post.author
-          const usernameLength = username && username?.length > 3 ? username?.length - 3 : 0;
-          const usernameFormatted =  username?.slice(0, 3)?.toLowerCase() + '*'.repeat(usernameLength)
-          return {
-            _id: post._id,
-            text: post.text,
-            type: post.type,
-            author: {username: username? usernameFormatted : '' },
-          };
-        }).reverse();
-        res.send(modifiedPosts);
+      const filter = {};
+      if (type) {
+        const typesArray = type.split(',').map(item => item.trim());
+        filter.type = { $in: typesArray };
+      }
+      if (startDate || endDate) {
+        filter.createdAt = {};
+        if (startDate) {
+          filter.createdAt.$gte = new Date(startDate);
+        }
+        if (endDate) {
+          filter.createdAt.$lte = new Date(endDate);
+        }
+      }
+      if (text) {
+        filter.text = { $regex: new RegExp(text, 'i') };
+      }
+      const total = await modelPost.countDocuments(filter);
+      const posts = await modelPost.find(filter);
+
+      const postFormatted = posts.map(post => {
+        const { username } = post.author;
+        const usernameLength = username && username.length > 3 ? username.length - 3 : 0;
+        const usernameFormatted = username ? username.slice(0, 3).toLowerCase() + '*'.repeat(usernameLength) : '';
+        return {
+          _id: post._id,
+          text: post.text,
+          type: post.type,
+          author: { username: usernameFormatted },
+        };
+      }).reverse();
+
+      res.json({
+        total,
+        posts: postFormatted
+      });
+
+    } else {
+      res.status(401).json({ message: `Não autorizado! ${req.session.user}` });
     }
-    else {
-      res.status(401).json({ message:`Não autorizado! ${req.session.user}`})
-    }
-  }
-  catch(err) {
-    next(err)
+  } catch (err) {
+    next(err);
   }
 };
-
 
 postController.mypost = async function (req, res, next) {
   try {
