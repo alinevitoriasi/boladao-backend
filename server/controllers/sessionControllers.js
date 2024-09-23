@@ -17,13 +17,13 @@ sessionController.login = async function (req, res, next) {
       return res.status(401).json({success:false, message:'Senha - Errou feio, errou rude!'})
     }
 
-    const token = jwt.sign({id: user._id},'@boladao-token',{expiresIn:"3d"})
+    const token = jwt.sign({id: user._id},'@boladao-token',{expiresIn:"1d"})
 
     req.session.user = user;
     req.session.user.save()
-    console.log('req.session save',req.session)
 
-    return res.status(200).json({auth:true, message:'TUDO SUPIMPA!', token:token, username:user?.username, isAdmin:user?.isAdmin })
+    return res.status(200).json({token:token , isAdmin:user?.isAdmin, message:'TUDO SUPIMPA!'})
+    // return res.status(200).json({auth:true, message:'TUDO SUPIMPA!', token:token, username:user?.username, isAdmin:user?.isAdmin })
   }
   catch(err) {
     return res.status(500).json(err)

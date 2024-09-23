@@ -6,25 +6,20 @@ let postController = {}
 
 postController.create = async function (req, res, next) {
   try {
-    if(req.session.user){
-      const newPost = new modelPost({
-        text: req.body.text,
-        date: req.body.date,
-        location: req.body.location,
-        type: req.body.type,
-        isAnonymous: req.body.isAnonymous,
-        author: {
-          username: req.session.user.username,
-          id: req.session.user._id
-        },
-      });
+    const newPost = new modelPost({
+      text: req.body.text,
+      date: req.body.date,
+      location: req.body.location,
+      type: req.body.type,
+      isAnonymous: req.body.isAnonymous,
+      author: {
+        username: req.session.user.username,
+        id: req.session.user._id
+      },
+    });
 
-      await modelPost.create(newPost);
-      res.status(200).json({ message: 'Criado com Sucesso!' });
-    }
-    else {
-      res.status(401).json({ message:'Não autorizado!'})
-    }
+    await modelPost.create(newPost);
+    res.status(200).json({ message: 'Criado com Sucesso!' });
   }
   catch(err) {
     next(err)
@@ -33,7 +28,6 @@ postController.create = async function (req, res, next) {
 
 postController.list = async function (req, res, next) {
   try {
-    if (req.session.user) {
       const { type, startDate, endDate, text } = req.query;
 
       const filter = {};
@@ -53,10 +47,14 @@ postController.list = async function (req, res, next) {
       if (text) {
         filter.text = { $regex: new RegExp(text, 'i') };
       }
-      const total = await modelPost.countDocuments(filter);
-      const posts = await modelPost.find(filter);
 
-      const postFormatted = posts.map(post => {
+
+      const posts = await modelPost.find(filter);
+      const postIsVisible = posts?.filter(post=> post.isVisible !== false);
+
+
+      const formatDocument = (posts) =>{
+        return posts.map(post => {
         const { username } = post.author;
         const usernameLength = username && username.length > 3 ? username.length - 3 : 0;
         const usernameFormatted = username ? username.slice(0, 3).toLowerCase() + '*'.repeat(usernameLength) : '';
@@ -67,35 +65,44 @@ postController.list = async function (req, res, next) {
           author: { username: usernameFormatted },
         };
       }).reverse();
-
-      res.json({
-        total,
-        posts: postFormatted
-      });
-
-    } else {
-      res.status(401).json({ message: `Não autorizado! ${req.session.user}` });
     }
+
+
+     if(req.session.user.isAdmin){
+      const total = await modelPost.countDocuments(filter);
+        return res.json({
+          total,
+          posts: formatDocument(posts)
+        });
+     }
+
+     return res.json({
+      posts: formatDocument(postIsVisible)
+    });
+
   } catch (err) {
     next(err);
   }
 };
 
-postController.mypost = async function (req, res, next) {
+postController.getPostById = async function (req, res) {
   try {
-    if(req.session.user){
-      const Post = await  modelPost.find({'author.id':req.session.user._id})
-      res.send(Post);
+    const post = await modelPost.findOne({_id: req.params.id})
+
+    const commentsFormatted = post?.comments?.map(comment=> {
+      return { text: comment.text  };
+    })
+
+    if(req.session.user.isAdmin){
+     return res.send(post);
     }
-    else {
-      res.status(401).json({ message:'Não autorizado!'})
-    }
+
+    return res.send({text: post.text, type: post.type , comments: commentsFormatted});
   }
   catch(err) {
-    next(err)
+    next(err);
   }
 };
-
 
 postController.comment = async function (req, res) {
   try {
@@ -109,11 +116,47 @@ postController.comment = async function (req, res) {
   }
 };
 
+postController.mypost = async function (req, res, next) {
+  try {
+    const posts = await modelPost.find({'author.id':req.session.user._id})
+
+    const formatDocument = (posts) =>{
+      return posts.map(post => {
+      const { username } = post.author;
+      const usernameLength = username && username.length > 3 ? username.length - 3 : 0;
+      const usernameFormatted = username ? username.slice(0, 3).toLowerCase() + '*'.repeat(usernameLength) : '';
+      return {
+        _id: post._id,
+        text: post.text,
+        type: post.type,
+        author: { username: usernameFormatted },
+      };
+    }).reverse();
+  }
+
+    return res.status(200).json(formatDocument(posts));
+  }
+  catch(err) {
+    next(err)
+  }
+};
+
 postController.update = async function (req, res) {
   try {
     await modelPost.findByIdAndUpdate({_id: req.params.id}, req.body)
+    return res.status(200).json({ message:'Atualizado com sucesso!'});
+  }
+  catch(err) {
+    next(err)
+  }
+};
+
+postController.report = async function (req, res) {
+  try {
     const Post = await modelPost.findOne({_id: req.params.id})
-    res.send(Post);
+    await modelPost.findByIdAndUpdate({_id: req.params.id},{ isVisible: !Post.isVisible })
+
+    return res.status(200).json({ message:'Atualizado com sucesso!'});
   }
   catch(err) {
     next(err)
@@ -122,22 +165,18 @@ postController.update = async function (req, res) {
 
 postController.delete = async function (req, res) {
   try {
-    const Post = await modelPost.findByIdAndRemove({_id: req.params.id})
-    res.send(Post);
+    await modelPost.findByIdAndRemove({_id: req.params.id})
+    return res.status(200).json({ message:'Deletado com sucesso!'});
   }
   catch(err) {
     next(err)
   }
 };
 
-postController.getPostById = async function (req, res) {
-  try {
-    const Post = await modelPost.findOne({_id: req.params.id})
-    res.send(Post);
-  }
-  catch(err) {
-    next(err)
-  }
-};
+
+
+
+
+
 
 module.exports = postController;

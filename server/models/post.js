@@ -21,7 +21,20 @@ const PostSchema = new Schema({
   date: String,
   type: [String],
   isAnonymous: Boolean,
-  comments:[{ text: String,  username: String, date: String}]
+  isVisible: {
+    type: Boolean,
+    required: true,
+    default: true
+  },
+  comments:[{
+    text: String,
+    username: String,
+    date: String,
+    isVisible: {
+    type: Boolean,
+    required: true,
+    default: true
+  },}]
 });
 
 mongoose.model('Post', PostSchema)
