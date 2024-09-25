@@ -130,6 +130,7 @@ postController.mypost = async function (req, res, next) {
         text: post.text,
         type: post.type,
         author: { username: usernameFormatted },
+        isVisible: post.isVisible
       };
     }).reverse();
   }
