@@ -1,6 +1,6 @@
 const postController = require('../controllers/postControllers');
-const adminMiddleware = require('../middleware/adminMiddleware');
-const authMiddleware = require('../middleware/authMiddleware');
+const adminMiddleware = require('../middlewares/adminMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
 
 module.exports = (app) => {
     app.route('/posts')
