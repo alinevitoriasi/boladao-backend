@@ -49,8 +49,12 @@ commentController.getCommentsByPost  = async function (req, res, next) {
     const commentsWithEditFlag = comments.map(comment => ({
       _id: comment._id,
       content: comment.content,
-      isEditable: comment.author._id.equals(userId)
+      isEditable: comment.author._id.equals(userId),
+      isVisible: comment.isVisible
     }));
+    if(req.user.role ==='admin'){
+      return res.status(200).json(commentsWithEditFlag);
+    }
 
     const commentIsVisible = commentsWithEditFlag?.filter(post=> post.isVisible !== false);
 
@@ -115,5 +119,30 @@ commentController.deleteComment  = async function  (req, res, next) {
 };
 
 
+
+
+commentController.report  = async function (req, res) {
+  try {
+    const { commentId } = req.params;
+
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: 'Comentário não encontrado.' });
+    }
+
+    if (req.user.role!=='admin') {
+      return res.status(403).json({ message: 'Você não tem permissão para editar este comentário.' });
+    }
+
+
+
+    await Comment.findByIdAndUpdate({_id: commentId},{ isVisible: !comment.isVisible })
+
+
+    return res.status(200).json({ message:'Atualizado com sucesso!'});
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = commentController;

@@ -124,15 +124,12 @@ postController.mypost = async function (req, res, next) {
 
     const formatDocument = (posts) =>{
       return posts.map(post => {
-      const { username } = post.author;
-      const usernameLength = username && username.length > 3 ? username.length - 3 : 0;
-      const usernameFormatted = username ? username.slice(0, 3).toLowerCase() + '*'.repeat(usernameLength) : '';
       return {
         _id: post._id,
         text: post.text,
         type: post.type,
-        author: { username: usernameFormatted },
-        isVisible: post.isVisible
+        isVisible: post.isVisible,
+        moderation: post.moderation
       };
     }).reverse();
   }
@@ -157,7 +154,7 @@ postController.update = async function (req, res) {
 postController.report = async function (req, res) {
   try {
     const Post = await modelPost.findOne({_id: req.params.id})
-    await modelPost.findByIdAndUpdate({_id: req.params.id},{ isVisible: !Post.isVisible })
+    await modelPost.findByIdAndUpdate({_id: req.params.id},{ isVisible: !Post.isVisible, moderation: req.body.moderation })
 
     return res.status(200).json({ message:'Atualizado com sucesso!'});
   }
