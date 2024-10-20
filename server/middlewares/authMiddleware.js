@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken')
+const decodeToken = require('../utils/decodeToken')
+
 
 function authMiddleware(req, res, next) {
 

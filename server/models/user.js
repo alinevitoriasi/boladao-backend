@@ -15,6 +15,11 @@ const UserSchema = new Schema({
         type: String,
         required: [true, 'Campo obrigatório']
     },
+    role:{
+        type: String,
+        required: true,
+        default: 'user'
+    },
     isAdmin: {
         type: Boolean,
         required: true,

@@ -71,7 +71,7 @@ postController.list = async function (req, res, next) {
 
 
 
-     if(req.session.user.isAdmin){
+     if(req.user.role ==='admin'){
       const total = await modelPost.countDocuments(filter);
         return res.json({
           total,

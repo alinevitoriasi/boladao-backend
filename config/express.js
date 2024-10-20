@@ -8,6 +8,7 @@ const cors = require("cors");
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
+
 module.exports = () => {
   const app = express();
 
@@ -20,22 +21,7 @@ module.exports = () => {
   app.use(limiter);
 
   app.use(
-    helmet({
-      contentSecurityPolicy: {
-        useDefaults: true,
-        directives: {
-          "script-src": ["'self'"],
-          "img-src": ["'self'"],
-        },
-      },
-      crossOriginEmbedderPolicy: false,
-      crossOriginResourcePolicy: { policy: "same-origin" },
-      dnsPrefetchControl: { allow: false },
-      frameguard: { action: "deny" }, // Evita que seu site seja renderizado dentro de um iframe
-      hsts: { maxAge: 63072000, includeSubDomains: true, preload: true }, // HTTP Strict Transport Security
-      noSniff: true, // Evita a detecção MIME
-      xssFilter: true, // Proteção contra XSS
-    })
+    helmet()
   );
 
   const allowedOrigins = [
@@ -52,7 +38,7 @@ module.exports = () => {
 
   app.set("trust proxy", 1);
   app.use(session({
-    secret: '@boladao-Token',
+    secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: true,
     store: MongoStore.create({
@@ -60,7 +46,7 @@ module.exports = () => {
       collectionName: 'sessions'
     }),
     cookie: {
-      secure: false, //true- https /false-local
+      secure:false, //true- https /false-local
       maxAge: 1000 * 60 * 60 * 24  // 1 dia
     }
   }));
