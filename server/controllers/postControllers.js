@@ -13,8 +13,7 @@ postController.create = async function (req, res, next) {
       type: req.body.type,
       isAnonymous: req.body.isAnonymous,
       author: {
-        username: req.session.user.username,
-        id: req.session.user._id
+        id: req.user.id
       },
     });
 
@@ -96,7 +95,7 @@ postController.getPostById = async function (req, res) {
       return { text: comment.text  };
     })
 
-    if(req.session.user.isAdmin){
+    if(req.user.role ==='admin'){
      return res.send(post);
     }
 
@@ -121,7 +120,7 @@ postController.comment = async function (req, res) {
 
 postController.mypost = async function (req, res, next) {
   try {
-    const posts = await modelPost.find({'author.id':req.session.user._id})
+    const posts = await modelPost.find({'author.id':req.user.id})
 
     const formatDocument = (posts) =>{
       return posts.map(post => {
