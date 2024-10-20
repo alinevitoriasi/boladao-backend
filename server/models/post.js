@@ -6,7 +6,6 @@ const PostSchema = new Schema({
   author:{
     username : {
       type: String,
-      required: [true, 'Campo obrigatório']
     },
     id : {
       type: String,
@@ -26,15 +25,13 @@ const PostSchema = new Schema({
     required: true,
     default: true
   },
-  comments:[{
-    text: String,
-    username: String,
-    date: String,
-    isVisible: {
-    type: Boolean,
-    required: true,
-    default: true
-  },}]
+  moderation: {
+    type: String,
+  },
+  comments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Comment',
+  }],
 });
 
 mongoose.model('Post', PostSchema)

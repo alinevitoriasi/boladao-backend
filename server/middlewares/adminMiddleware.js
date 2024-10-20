@@ -12,8 +12,7 @@ function adminMiddleware(req, res, next) {
     if (!userData) {
       return res.status(401).send({message:'Token inválido ou expirado.'});
     }
-
-    if (userData?.user?.role!=='admin') {
+    if (userData?.role!=='admin') {
         return res.status(401).json({ message: 'Acesso restrito a administradores.' });
     }
 
