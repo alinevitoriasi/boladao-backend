@@ -28,6 +28,8 @@ postController.create = async function (req, res, next) {
 
 postController.list = async function (req, res, next) {
   try {
+
+      console.log('teste',req.user)
       const { type, startDate, endDate, text } = req.query;
 
       const filter = {};
@@ -66,6 +68,7 @@ postController.list = async function (req, res, next) {
         };
       }).reverse();
     }
+
 
 
      if(req.session.user.isAdmin){

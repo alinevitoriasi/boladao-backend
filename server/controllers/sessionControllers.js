@@ -19,7 +19,7 @@ sessionController.login = async function (req, res, next) {
 
     const token = jwt.sign({id: user._id},'@boladao-token',{expiresIn:"1d"})
 
-    req.session.user = user;
+    // req.session.user = user;
     req.session.user.save()
 
     return res.status(200).json({token:token , isAdmin:user?.isAdmin, message:'Login realizado com sucesso!'})

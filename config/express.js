@@ -13,8 +13,8 @@ module.exports = () => {
 
   // Configuração do rate limiter
   const limiter = rateLimit({
-    windowMs:  60 * 1000, // 1 minuto
-    max: 10, // limite de 10 requisições por IP por janela de tempo
+    windowMs: 30 * 60 * 1000, // 15 minutos
+    max: 1000, // limite de 100 requisições por IP por janela de tempo
     message: 'Muitas requisições de seu IP, por favor tente novamente mais tarde.'
   });
   app.use(limiter);
@@ -60,7 +60,7 @@ module.exports = () => {
       collectionName: 'sessions'
     }),
     cookie: {
-      secure: true,
+      secure: false, //true- https /false-local
       maxAge: 1000 * 60 * 60 * 24  // 1 dia
     }
   }));
